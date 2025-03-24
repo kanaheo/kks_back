@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/shoppingmall?serverTimezone=Asia/Seoul
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update  # (처음에는 create, 데이터 유지하려면 update)
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+  security:
+    enabled: false
+
+    jwt:
+      secret-key: "a94b9300d48a0c7525e8cb4d1300ffeba232250d27df7c1efaf05b8f751c00bdc4ae014764850e9af15b46ac78a15a4b1debf868de16e73ab095f5f2066b23f35745a73a7b27cc00b033dc682aad7654d5d2035cc8232179fb13768f52e76daeb8f5e3a0c798f8a92a47ee5ed7e7683f510a6777ef81b7e3ac26f28e4196a538bf62acc4dae826225883007c331a8223bb995829dc1a2367756a4fa9b91c4990b270f7935bee8714fd9d20a738bb7cd3f5fb42920d028b8f54f106138d3dac3dcba79e5d4fab73f3986afa2cc1eac91fbd3402217ddd751dbc6d1923d33f920876d44d770c637f5f085b47f5d9da5f316575a3702c0415b060e12954be9df8c5"
