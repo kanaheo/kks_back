@@ -38,8 +38,8 @@ out/
 
 # Gradle
 .gradle/
-.build/
-.out/
+/build/
+/out/
 
 # IntelliJ IDEA
 .idea/
@@ -52,5 +52,5 @@ out/
 .DS_Store
 
 # 설정 파일
-.src/main/resources/application.yml
+/src/main/resources/application.yml
 

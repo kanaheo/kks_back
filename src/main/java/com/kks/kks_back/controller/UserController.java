@@ -1,6 +1,9 @@
 package com.kks.kks_back.controller;
 
+import com.kks.kks_back.dto.UserLoginRequest;
+import com.kks.kks_back.dto.UserLoginResponse;
 import com.kks.kks_back.dto.UserSignupRequest;
+import com.kks.kks_back.dto.UserLoginResponse;
 import com.kks.kks_back.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +29,12 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest request) {
+        UserLoginResponse response = userService.login(request);
+        return ResponseEntity.ok(response);
     }
 
 }
