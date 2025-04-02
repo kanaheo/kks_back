@@ -49,19 +49,19 @@ public class UserService {
     }
 
     public UserLoginResponse login(UserLoginRequest request) {
-        // 이메일로 유저 찾기
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 맞지 않습니다."));
 
-        // 비밀번호 비교
+        // 비밀번호 매칭 검사
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException("이메일 또는 비밀번호가 맞지 않습니다.");
         }
 
         // JWT 토큰 생성
         String token = jwtUtil.createToken(user.getEmail());
 
-        // 응답 객체로 감싸서 리턴
-        return new UserLoginResponse(token);
+        // 비밀번호 제외하고 응답 생성
+        return new UserLoginResponse(token, user.getEmail(), user.getNickname());
     }
+
 }
