@@ -6,9 +6,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.kks.kks_back.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
+import com.kks.kks_back.util.JwtUtil;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
+    private final JwtUtil jwtUtil;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -18,11 +24,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화 (API 서버용)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/signup", "/api/users", "/api/login").permitAll() // 공개 경로
-                        .anyRequest().authenticated() // 그 외는 인증 필요
-                );
+                        .requestMatchers("/api/signup", "/api/login").permitAll()
+                        .anyRequest().authenticated()
+                )
+                // 🔥 JWT 필터 등록! (UsernamePasswordAuthenticationFilter 앞에 실행됨)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
