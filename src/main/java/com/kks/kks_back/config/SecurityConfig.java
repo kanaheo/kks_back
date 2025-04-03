@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import com.kks.kks_back.util.JwtUtil;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@RequiredArgsConstructor
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
 
@@ -26,10 +26,18 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/signup", "/api/login").permitAll()
+                        .requestMatchers(
+                                "/api/users/signup",
+                                "/api/users/login",
+                                "/api/users/logout",
+                                "/login/oauth2/**"
+                        ).permitAll()  // ✅ 여기 경로도 전부 수정!
                         .anyRequest().authenticated()
                 )
-                // 🔥 JWT 필터 등록! (UsernamePasswordAuthenticationFilter 앞에 실행됨)
+                .oauth2Login()  // OAuth2 로그인 처리
+                .loginPage("/login")  // 사용자 정의 로그인 페이지 (필요 시)
+                .defaultSuccessUrl("/home")  // 로그인 성공 후 리디렉션 경로
+                .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
