@@ -1,9 +1,11 @@
 package com.kks.kks_back.config;
 
+import com.kks.kks_back.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.kks.kks_back.security.JwtAuthenticationFilter;
@@ -15,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
+    private final CustomOAuth2UserService customOAuth2UserService;
+
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -31,13 +35,16 @@ public class SecurityConfig {
                                 "/api/users/login",
                                 "/api/users/logout",
                                 "/login/oauth2/**"
-                        ).permitAll()  // ✅ 여기 경로도 전부 수정!
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2Login()  // OAuth2 로그인 처리
-                .loginPage("/login")  // 사용자 정의 로그인 페이지 (필요 시)
-                .defaultSuccessUrl("/home")  // 로그인 성공 후 리디렉션 경로
-                .and()
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler((request, response, authentication) -> {
+                            OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+                            customOAuth2UserService.handleOAuthLogin(oauthUser, response);
+                            response.sendRedirect("http://localhost:3000");
+                        })
+                )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

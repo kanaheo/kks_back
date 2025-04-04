@@ -39,6 +39,7 @@ public class UserService {
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .nickname(request.getNickname())
+                .social(true)
                 .build();
 
         userRepository.save(user);
