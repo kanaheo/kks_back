@@ -7,6 +7,7 @@ import com.kks.kks_back.entity.User;
 import com.kks.kks_back.repository.UserRepository;
 import com.kks.kks_back.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,7 @@ public class UserService {
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .nickname(request.getNickname())
-                .social(true)
+                .social(false)
                 .build();
 
         userRepository.save(user);
@@ -59,10 +60,16 @@ public class UserService {
         }
 
         // JWT 토큰 생성
-        String token = jwtUtil.createToken(user.getEmail());
+        String token = jwtUtil.createToken(user.getEmail(), user.getNickname());
 
         // 비밀번호 제외하고 응답 생성
         return new UserLoginResponse(token, user.getEmail(), user.getNickname());
+    }
+
+    public User getMyInfo() {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("유저 없음"));
     }
 
 }

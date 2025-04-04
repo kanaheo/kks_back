@@ -5,6 +5,7 @@ import com.kks.kks_back.dto.UserLoginResponse;
 import com.kks.kks_back.dto.UserSignupRequest;
 import com.kks.kks_back.entity.User;
 import com.kks.kks_back.service.UserService;
+import com.kks.kks_back.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,11 +25,23 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     // ✅ 회원가입: POST /api/users/signup
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody UserSignupRequest request) {
-        userService.signup(request);
+    public ResponseEntity<String> signup(@RequestBody UserSignupRequest request, HttpServletResponse response) {
+        userService.signup(request); // DB 저장
+        // ✅ JWT 발급
+        String token = jwtUtil.createToken(request.getEmail(), request.getNickname());
+
+        // ✅ 쿠키 저장
+        Cookie cookie = new Cookie("access_token", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24 * 7); // 7일 유지
+        response.addCookie(cookie);
+
         return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공!");
     }
 
@@ -58,9 +73,12 @@ public class UserController {
 
     // ✅ 내 정보 조회: GET /api/users/meinfo
     @GetMapping("/meinfo")
-    public ResponseEntity<String> getMyInfo(HttpServletRequest request) {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ResponseEntity.ok("현재 로그인한 유저: " + email);
+    public ResponseEntity<Map<String, String>> getMyInfo() {
+        User user = userService.getMyInfo();
+        Map<String, String> result = new HashMap<>();
+        result.put("email", user.getEmail());
+        result.put("nickname", user.getNickname()); // ✅ 닉네임 추가
+        return ResponseEntity.ok(result);
     }
 
     // ✅ 로그아웃: POST /api/users/logout

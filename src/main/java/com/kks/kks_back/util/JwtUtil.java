@@ -20,9 +20,11 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String createToken(String email) {
+    public String createToken(String email, String nickname) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("nickname", nickname)
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
