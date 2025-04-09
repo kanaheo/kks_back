@@ -40,7 +40,8 @@ public class SecurityConfig {
                                 "/api/users/signup",
                                 "/api/users/login",
                                 "/api/users/logout",
-                                "/login/oauth2/**"
+                                "/login/oauth2/**",
+                                "/api/products/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
