@@ -2,6 +2,7 @@ package com.kks.kks_back.controller;
 
 import com.kks.kks_back.dto.UserLoginRequest;
 import com.kks.kks_back.dto.UserLoginResponse;
+import com.kks.kks_back.dto.UserResponseDto;
 import com.kks.kks_back.dto.UserSignupRequest;
 import com.kks.kks_back.entity.User;
 import com.kks.kks_back.service.UserService;
@@ -72,13 +73,10 @@ public class UserController {
     }
 
     // ✅ 내 정보 조회: GET /api/users/meinfo
-    @GetMapping("/meinfo")
-    public ResponseEntity<Map<String, String>> getMyInfo() {
-        User user = userService.getMyInfo();
-        Map<String, String> result = new HashMap<>();
-        result.put("email", user.getEmail());
-        result.put("nickname", user.getNickname()); // ✅ 닉네임 추가
-        return ResponseEntity.ok(result);
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDto> getMe() {
+        User user = userService.getMyInfo(); // 로그인된 사용자 반환
+        return ResponseEntity.ok(new UserResponseDto(user));
     }
 
     // ✅ 로그아웃: POST /api/users/logout
