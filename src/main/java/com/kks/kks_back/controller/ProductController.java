@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,17 +25,18 @@ public class ProductController {
             @RequestParam String description,
             @RequestParam int price,
             @RequestParam String location,
+            @RequestParam String category,
             @RequestPart(value = "images", required = false) List<MultipartFile> images
     ) {
-        productService.createProduct(title, description, price, location, images);
+        productService.createProduct(title, description, price, location, category, images);
 
         return ResponseEntity.ok(Map.of("message", "상품 등록 완료"));
     }
 
     // 상품 목록 조회
     @GetMapping
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts(@RequestParam(required = false) String category) {
+        return ResponseEntity.ok(productService.getAllProducts(category));
     }
 
     // 상품 상세 조회

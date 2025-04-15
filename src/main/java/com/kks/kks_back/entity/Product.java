@@ -27,6 +27,7 @@ public class Product {
     private String description;
     private int price;
     private String location;
+    private String category;
 
     @CreatedDate
     private LocalDateTime createdAt;

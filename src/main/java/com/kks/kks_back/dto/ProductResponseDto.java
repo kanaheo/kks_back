@@ -11,6 +11,8 @@ public class ProductResponseDto {
     private final String description;
     private final int price;
     private final String location;
+    private final String category;
+    private final String imageUrl;
     private final String sellerNickname;
 
     public ProductResponseDto(Product product) {
@@ -20,6 +22,10 @@ public class ProductResponseDto {
         this.price = product.getPrice();
         this.location = product.getLocation();
         this.sellerNickname = product.getSeller().getNickname();
+        this.category = product.getCategory();
+        this.imageUrl = product.getImages().isEmpty()
+                ? null
+                : product.getImages().get(0).getImageUrl();
     }
 }
 

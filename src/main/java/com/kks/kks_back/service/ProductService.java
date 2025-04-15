@@ -29,8 +29,8 @@ public class ProductService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    public void createProduct(String title, String desc, int price, String location, List<MultipartFile> images) {
-        User seller = userService.getMyInfo();
+        public void createProduct(String title, String desc, int price, String location, String category, List<MultipartFile> images) {
+            User seller = userService.getMyInfo();
 
         // 1. 상품 저장
         Product product = Product.builder()
@@ -38,6 +38,7 @@ public class ProductService {
                 .description(desc)
                 .price(price)
                 .location(location)
+                .category(category)
                 .seller(seller)
                 .build();
 
@@ -75,9 +76,16 @@ public class ProductService {
     }
 
 
-    public List<ProductResponseDto> getAllProducts() {
-        return productRepository.findAll()
-                .stream()
+    public List<ProductResponseDto> getAllProducts(String category) {
+        List<Product> products;
+
+        if (category != null && !category.isBlank()) {
+            products = productRepository.findByCategory(category);
+        } else {
+            products = productRepository.findAll();
+        }
+
+        return products.stream()
                 .map(ProductResponseDto::new)
                 .toList();
     }
