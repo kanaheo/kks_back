@@ -92,7 +92,7 @@ public class ProductService {
 
     public ProductResponseDto getProductById(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 상품 없음"));
+                .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
         return new ProductResponseDto(product);
     }
 }
