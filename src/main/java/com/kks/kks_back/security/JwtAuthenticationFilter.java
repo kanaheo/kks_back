@@ -1,5 +1,6 @@
 package com.kks.kks_back.security;
 
+import com.kks.kks_back.entity.User;
 import com.kks.kks_back.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -30,7 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // ✅ 쿠키에서 access_token 꺼내기
         String token = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -47,11 +47,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Claims claims = jwtUtil.parseClaims(token);
                 String email = claims.getSubject();
 
+                // ✅ 진짜 유저 정보 조회
+                User user = jwtUtil.getUserFromEmail(email); // 직접 구현해둔 메서드 (DB 조회 등)
+                UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
+                // ✅ 진짜 인증 객체 생성
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (JwtException e) {
@@ -63,3 +67,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+
