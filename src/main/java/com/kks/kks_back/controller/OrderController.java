@@ -2,6 +2,8 @@ package com.kks.kks_back.controller;
 
 import com.kks.kks_back.dto.order.OrderRequestDto;
 import com.kks.kks_back.dto.order.OrderResponseDto;
+import com.kks.kks_back.entity.Order;
+import com.kks.kks_back.repository.OrderRepository;
 import com.kks.kks_back.security.UserDetailsImpl;
 import com.kks.kks_back.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import jakarta.validation.Valid;
 public class OrderController {
 
     private final OrderService orderService;
+    private final OrderRepository orderRepository;
 
     // ✅ 주문 생성
     @PostMapping("")
@@ -33,7 +36,14 @@ public class OrderController {
                     .body("로그인이 필요합니다.");
         }
 
-        Long orderId = orderService.createOrder(requestDto, userDetails.getUser());
-        return ResponseEntity.ok(new OrderResponseDto(orderId));
+        String orderNumber = orderService.createOrder(requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new OrderResponseDto(orderNumber));
     }
+
+    @GetMapping("/order-number/{orderNumber}")
+    public ResponseEntity<OrderResponseDto> getOrderByOrderNumber(@PathVariable String orderNumber) {
+        Order order = orderService.findByOrderNumber(orderNumber);
+        return ResponseEntity.ok(new OrderResponseDto(order));
+    }
+
 }

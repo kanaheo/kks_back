@@ -38,4 +38,7 @@ public class Order extends Timestamped {
 
     @Column(nullable = false)
     private String phone;
+
+    @Column(nullable = false, unique = true)
+    private String orderNumber;
 }

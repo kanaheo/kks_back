@@ -10,6 +10,8 @@ import com.kks.kks_back.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -18,7 +20,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final StripeService stripeService;
 
-    public Long createOrder(OrderRequestDto dto, User user) {
+    public String createOrder(OrderRequestDto dto, User user) {
         Product product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않음"));
 
@@ -35,9 +37,19 @@ public class OrderService {
                 .address(dto.getAddress())
                 .recipient(dto.getRecipient())
                 .phone(dto.getPhone())
+                .orderNumber(generateOrderNumber())
                 .build();
 
         orderRepository.save(order);
-        return order.getId();
+        return order.getOrderNumber();
+    }
+
+    private String generateOrderNumber() {
+        return "KKS-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
+    }
+
+    public Order findByOrderNumber(String orderNumber) {
+        return orderRepository.findByOrderNumber(orderNumber)
+                .orElseThrow(() -> new RuntimeException("주문번호를 찾을 수 없습니다: " + orderNumber));
     }
 }
