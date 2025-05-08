@@ -10,6 +10,7 @@ import com.kks.kks_back.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -51,5 +52,9 @@ public class OrderService {
     public Order findByOrderNumber(String orderNumber) {
         return orderRepository.findByOrderNumber(orderNumber)
                 .orElseThrow(() -> new RuntimeException("주문번호를 찾을 수 없습니다: " + orderNumber));
+    }
+
+    public List<Order> findByUser(User user) {
+        return orderRepository.findAllByUser(user);
     }
 }

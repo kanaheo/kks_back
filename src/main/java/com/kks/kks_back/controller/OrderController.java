@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -44,6 +46,22 @@ public class OrderController {
     public ResponseEntity<OrderResponseDto> getOrderByOrderNumber(@PathVariable String orderNumber) {
         Order order = orderService.findByOrderNumber(orderNumber);
         return ResponseEntity.ok(new OrderResponseDto(order));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<List<OrderResponseDto>> getMyOrders(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        List<Order> orders = orderService.findByUser(userDetails.getUser());
+        List<OrderResponseDto> response = orders.stream()
+                .map(OrderResponseDto::new)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 
 }

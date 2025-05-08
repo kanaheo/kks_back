@@ -21,16 +21,17 @@ public class OrderResponseDto {
         this.orderNumber = orderNumber;
     }
 
+    // 👉 주문 리스트용 (주문 + 상품 + 이미지 포함)
     public OrderResponseDto(Order order) {
         this.orderNumber = order.getOrderNumber();
 
         Product product = order.getProduct();
         if (product != null) {
-            this.productName = product.getTitle();
+            this.productName = product.getTitle(); // name → title 맞게 수정 완료!
 
             List<ProductImage> images = product.getImages();
             if (images != null && !images.isEmpty()) {
-                this.productImageUrl = images.get(0).getImageUrl(); // ✅ 첫 번째 이미지를 대표로 사용
+                this.productImageUrl = images.get(0).getImageUrl(); // ✅ 대표 이미지
             }
         }
     }
