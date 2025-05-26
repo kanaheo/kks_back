@@ -37,7 +37,7 @@ public class UserController {
 
         // ✅ 쿠키 저장
         Cookie cookie = new Cookie("access_token", token);
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(false);
         cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24 * 7); // 7일 유지
@@ -63,7 +63,7 @@ public class UserController {
         String token = loginResponse.getToken();
 
         Cookie cookie = new Cookie("access_token", token);
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(false);
         cookie.setSecure(false); // HTTPS일 때 true
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24 * 7); // 7일
