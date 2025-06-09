@@ -64,7 +64,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000")); // 프론트 주소 허용
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "https://kks-front.vercel.app" // ✅ 배포 프론트 주소 추가
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true); // 쿠키 포함 허용 (JWT용)
